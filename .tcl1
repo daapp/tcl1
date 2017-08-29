@@ -1,1 +1,6 @@
 interp alias {} str {} string
+
+
+# Local Variables:
+# mode: tcl
+# End:
