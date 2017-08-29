@@ -1,0 +1,46 @@
+#! /bin/sh
+# \
+exec tclsh "$0" ${1+"$@"}
+
+
+package require cmdline
+
+
+set options {
+    {n "loop over input lines"}
+    {p "loop over input lines and print result of last expression"}
+}
+
+set usage ": $argv0 \[options] 'code' ...\noptions:"
+
+try {
+    array set params [cmdline::getoptions argv $options $usage]
+} trap {CMDLINE USAGE} {msg o} {
+    puts $msg
+    exit 1
+}
+
+
+if {[llength $argv] != 1} {
+    chan puts [cmdline::usage $options $usage]
+    exit 1
+} else {
+    set code [lindex $argv 0]
+
+    if {$params(p) || $params(n)} {
+        while 1 {
+            set _ [chan get stdin]
+            if {[chan eof stdin]} {
+                break
+            } else {
+                if {$params(p)} {
+                    puts [uplevel #0 $code]
+                } else {
+                    uplevel #0 $code
+                }
+            }
+        }
+    } else {
+        uplevel #0 $code
+    }
+}
