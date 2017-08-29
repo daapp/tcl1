@@ -6,12 +6,17 @@ exec tclsh "$0" ${1+"$@"}
 package require cmdline
 
 
-set options {
-    {n "loop over input lines"}
-    {p "loop over input lines and print result of last expression"}
-}
+set rcFile ~/.tcl1
+
+set options [list \
+                 {n "loop over input lines"} \
+                 {p "loop over input lines and print result of last expression"} \
+                 [list I "do not read file $rcFile"] \
+            ]
 
 set usage ": $argv0 \[options] 'code' ...\noptions:"
+
+
 
 try {
     array set params [cmdline::getoptions argv $options $usage]
@@ -20,11 +25,14 @@ try {
     exit 1
 }
 
-
 if {[llength $argv] != 1} {
     chan puts [cmdline::usage $options $usage]
     exit 1
 } else {
+    if {$params(I) == 0 && [file exists $rcFile]} {
+        source $rcFile
+    }
+
     set code [lindex $argv 0]
 
     if {$params(p) || $params(n)} {
@@ -44,3 +52,8 @@ if {[llength $argv] != 1} {
         uplevel #0 $code
     }
 }
+
+
+# Local Variables:
+# mode: tcl
+# End:
