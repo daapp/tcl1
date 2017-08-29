@@ -2,6 +2,7 @@ tcl1 - frontend for one liner tcl scripts, as replacement for AWK.
 
 # Dependencies
 
+- tcl 8.6
 - tcllib (cmdline)
 
 # Options
